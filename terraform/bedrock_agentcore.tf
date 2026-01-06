@@ -36,19 +36,20 @@ resource "null_resource" "docker_image" {
 
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command     = <<EOF
-      source ~/.bash_profile || source ~/.profile || true
-
+    command     = <<-EOT
+      set -e
+      
       if ! command -v docker &> /dev/null; then
-        echo "Docker is not installed or not in PATH. Please install Docker and try again."
+        echo "Docker is not installed or not in PATH"
         exit 1
       fi
 
       aws ecr get-login-password | docker login --username AWS --password-stdin ${data.aws_ecr_authorization_token.token.proxy_endpoint}
 
-      docker buildx build --platform linux/arm64 -t ${aws_ecr_repository.agentcore_terraform_runtime.repository_url}:v1 ../${path.root} --push
+      docker buildx create --use --name arm64-builder 2>/dev/null || docker buildx use arm64-builder || true
 
-    EOF
+      docker buildx build --platform linux/arm64 -t ${aws_ecr_repository.agentcore_terraform_runtime.repository_url}:latest --push ../${path.root}
+    EOT
   }
 }
 # docker push ${aws_ecr_repository.agentcore_terraform_runtime.repository_url}:latest
@@ -374,7 +375,7 @@ resource "aws_bedrockagentcore_agent_runtime" "agentcore_runtime" {
 
   agent_runtime_artifact {
     container_configuration {
-      container_uri = "${aws_ecr_repository.agentcore_terraform_runtime.repository_url}:v1"
+      container_uri = "${aws_ecr_repository.agentcore_terraform_runtime.repository_url}:latest"
     }
   }
 

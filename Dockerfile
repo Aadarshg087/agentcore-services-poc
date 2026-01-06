@@ -1,5 +1,9 @@
-FROM ghcr.io/astral-sh/uv:python3.10-bookworm-slim
+FROM --platform=linux/arm64 python:3.12-slim
+
 WORKDIR /app
+
+# Install UV first
+RUN pip install --no-cache-dir uv
 
 # All environment variables in one layer
 ENV UV_SYSTEM_PYTHON=1 \
@@ -8,20 +12,13 @@ ENV UV_SYSTEM_PYTHON=1 \
     PYTHONUNBUFFERED=1 \
     DOCKER_CONTAINER=1
 
-
-
 COPY pyproject.toml pyproject.toml
+
 # Install from requirements file
 RUN uv pip install -r pyproject.toml
 
-
-
-
+# Install OpenTelemetry
 RUN uv pip install aws-opentelemetry-distro==0.12.2
-
-
-# Signal that this is running in Docker for host binding logic
-ENV DOCKER_CONTAINER=1
 
 # Create non-root user
 RUN useradd -m -u 1000 bedrock_agentcore
@@ -35,5 +32,4 @@ EXPOSE 8080
 COPY . .
 
 # Use the full module path
-
 CMD ["opentelemetry-instrument", "python", "-m", "src.main"]

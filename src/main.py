@@ -4,8 +4,8 @@ from strands_tools.code_interpreter import AgentCoreCodeInterpreter
 from bedrock_agentcore import BedrockAgentCoreApp
 from bedrock_agentcore.memory.integrations.strands.config import AgentCoreMemoryConfig, RetrievalConfig
 from bedrock_agentcore.memory.integrations.strands.session_manager import AgentCoreMemorySessionManager
-from mcp_client.client import get_streamable_http_mcp_client
-from model.load import load_model
+from .mcp_client.client import get_streamable_http_mcp_client
+from .model.load import load_model
 
 from dotenv import load_dotenv
 load_dotenv()
