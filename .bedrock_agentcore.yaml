@@ -1,0 +1,16 @@
+default_agent: hyperIvory_Agent
+is_agentcore_create_with_iac: true
+agents:
+  hyperIvory_Agent:
+    name: hyperIvory_Agent
+    entrypoint: /mnt/c/Users/aadar/Desktop/agentcore-temp/hyperIvory/src/main.py
+    deployment_type: container
+    source_path: /mnt/c/Users/aadar/Desktop/agentcore-temp/hyperIvory/src
+    aws:
+      account: null
+      region: null
+    bedrock_agentcore:
+      agent_id: null
+      agent_arn: null
+      agent_session_id: null
+    is_generated_by_agentcore_create: true
